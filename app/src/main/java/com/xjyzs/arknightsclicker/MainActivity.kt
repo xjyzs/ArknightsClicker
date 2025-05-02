@@ -83,7 +83,7 @@ fun MainUI(viewModel: MainViewModel) {
 }
 
 fun startGetEventMonitoring(viewModel: MainViewModel) {
-     viewModel.viewModelScope.launch {
+     thread {
         try {
             val process = Runtime.getRuntime().exec("su -c getevent -lt")
             val reader = BufferedReader(InputStreamReader(process.inputStream))
@@ -95,7 +95,11 @@ fun startGetEventMonitoring(viewModel: MainViewModel) {
                             arrayOf("su", "-c", "input keyevent 4")
                         )
                         viewModel.addMsg("返回成功")
-                        delay(10)
+                        while (true) {
+                            if ((reader.readLine() ?: break).contains("ABS_MT_TRACKING_ID   ffffffff")) {
+                                break
+                            }
+                        }
                     }
                 }
             }
