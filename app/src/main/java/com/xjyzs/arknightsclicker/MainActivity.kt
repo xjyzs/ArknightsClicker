@@ -84,7 +84,7 @@ private fun startGetEventMonitoring(viewModel: MainViewModel) {
             while (true) {
                 val line = reader.readLine() ?: break
                 if (line.contains("ABS_MT_POSITION_Y")) {
-                    if (line.substring(71,79).toInt(16)<2500) {
+                    if (line.substring(71,79).toInt(16)<1200) {
                         Runtime.getRuntime().exec(
                             arrayOf("su", "-c", "input keyevent 4")
                         )
