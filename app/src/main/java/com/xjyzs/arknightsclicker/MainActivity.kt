@@ -85,18 +85,21 @@ fun MainUI(viewModel: MainViewModel) {
 fun startGetEventMonitoring(viewModel: MainViewModel) {
      thread {
         try {
-            val process = Runtime.getRuntime().exec("su -c getevent -lt")
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            val process = ProcessBuilder("su").apply {
+                redirectErrorStream(true)
+            }.start()
+            val outputStream = process.outputStream
+            val inputStream = process.inputStream.bufferedReader()
+            outputStream.write("getevent\n".toByteArray())
+            outputStream.flush()
             while (true) {
-                val line = reader.readLine() ?: break
-                if (line.contains("ABS_MT_POSITION_Y")) {
-                    if (line.substring(71,79).toInt(16)<1200) {
-                        Runtime.getRuntime().exec(
-                            arrayOf("su", "-c", "input keyevent 4")
-                        )
+                val line = inputStream.readLine() ?: break
+                if (line.contains("0036")) { // X 坐标
+                    if (line.substring(10,18).toInt(16)<1200) {
+                        Runtime.getRuntime().exec("input keyevent 4")
                         viewModel.addMsg("返回成功")
                         while (true) {
-                            if ((reader.readLine() ?: break).contains("ABS_MT_TRACKING_ID   ffffffff")) {
+                            if ((inputStream.readLine() ?: break).contains("0039 ffffffff")) {
                                 break
                             }
                         }
