@@ -77,31 +77,18 @@ fun MainUI(viewModel: MainViewModel) {
 }
 
 private fun startGetEventMonitoring(viewModel: MainViewModel) {
-    var lastUpdatedTimeX=0f
-    var lastUpdatedTimeY=0f
     thread {
         try {
             val process = Runtime.getRuntime().exec("su -c getevent -lt")
             val reader = BufferedReader(InputStreamReader(process.inputStream))
             while (true) {
                 val line = reader.readLine() ?: break
-                if (line.contains("ABS_MT_POSITION_X")) {
-                    val lastX=line.substring(71,79).toInt(16)
-                    if (4400<lastX && lastX<7000){
-                        lastUpdatedTimeX=line.substring(4,16).toFloat()
-                    }
-                } else if (line.contains("ABS_MT_POSITION_Y")) {
-                    val lastY = line.substring(71,79).toInt(16)
-                    if (lastY<2400) {
-                        lastUpdatedTimeY = line.substring(4, 16).toFloat()
-                    }
-                } else if (line.contains("EV_ABS") && line.contains("ABS_MT_TRACKING_ID") && line.contains("ffffffff")) {
-                    val currentTime=line.substring(4,16).toFloat()
-                    if (currentTime-lastUpdatedTimeX<0.1 && currentTime-lastUpdatedTimeY<0.1) {
+                if (line.contains("ABS_MT_POSITION_Y")) {
+                    if (line.substring(71,79).toInt(16)<2500) {
                         Runtime.getRuntime().exec(
                             arrayOf("su", "-c", "input keyevent 4")
                         )
-                        viewModel.addMsg("$currentTime 返回成功")
+                        viewModel.addMsg("返回成功")
                     }
                 }
             }
