@@ -17,17 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xjyzs.arknightsclicker.theme.ArknightsClickerTheme
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.concurrent.thread
@@ -55,7 +50,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainUI(viewModel: MainViewModel) {
     val scrollState = rememberLazyListState()
-    val scope=rememberCoroutineScope()
     LaunchedEffect(if (viewModel.msgs.isNotEmpty())viewModel.msgs.size else 0) {
         scrollState.scrollToItem(viewModel.msgs.size)
     }
@@ -90,16 +84,17 @@ fun startGetEventMonitoring(viewModel: MainViewModel) {
             }.start()
             val outputStream = process.outputStream
             val inputStream = process.inputStream.bufferedReader()
-            outputStream.write("getevent\n".toByteArray())
-            outputStream.flush()
+            val p = Runtime.getRuntime().exec("su -c getevent")
+            val reader = BufferedReader(InputStreamReader(p.inputStream))
             while (true) {
-                val line = inputStream.readLine() ?: break
+                val line = reader.readLine() ?: break
                 if (line.contains("0036")) { // X 坐标
-                    if (line.substring(10,18).toInt(16)<1200) {
-                        Runtime.getRuntime().exec("input keyevent 4")
+                    if (line.substring(29,37).toInt(16)<1200) {
+                        outputStream.write("input keyevent 4\n".toByteArray())
+                        outputStream.flush()
                         viewModel.addMsg("返回成功")
                         while (true) {
-                            if ((inputStream.readLine() ?: break).contains("0039 ffffffff")) {
+                            if ((reader.readLine() ?: break).contains("0039 ffffffff")) {
                                 break
                             }
                         }
@@ -111,3 +106,6 @@ fun startGetEventMonitoring(viewModel: MainViewModel) {
         }
     }
 }
+
+
+
