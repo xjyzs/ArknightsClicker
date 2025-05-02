@@ -22,8 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xjyzs.arknightsclicker.theme.ArknightsClickerTheme
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.concurrent.thread
@@ -51,6 +55,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainUI(viewModel: MainViewModel) {
     val scrollState = rememberLazyListState()
+    val scope=rememberCoroutineScope()
     LaunchedEffect(if (viewModel.msgs.isNotEmpty())viewModel.msgs.size else 0) {
         scrollState.scrollToItem(viewModel.msgs.size)
     }
@@ -77,8 +82,8 @@ fun MainUI(viewModel: MainViewModel) {
     }
 }
 
-private fun startGetEventMonitoring(viewModel: MainViewModel) {
-     thread {
+fun startGetEventMonitoring(viewModel: MainViewModel) {
+     viewModel.viewModelScope.launch {
         try {
             val process = Runtime.getRuntime().exec("su -c getevent -lt")
             val reader = BufferedReader(InputStreamReader(process.inputStream))
@@ -90,6 +95,7 @@ private fun startGetEventMonitoring(viewModel: MainViewModel) {
                             arrayOf("su", "-c", "input keyevent 4")
                         )
                         viewModel.addMsg("返回成功")
+                        delay(10)
                     }
                 }
             }
