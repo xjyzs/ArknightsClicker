@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.xjyzs.arknightsclicker.theme.ArknightsClickerTheme
+import com.xjyzs.arknightsclicker.ui.theme.ArknightsClickerTheme
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.concurrent.thread
@@ -41,7 +43,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ArknightsClickerTheme {
                 val viewModel: MainViewModel=viewModel()
-                MainUI(viewModel)
+                Surface(Modifier.fillMaxSize()) {
+                    MainUI(viewModel)
+                }
             }
         }
     }
@@ -83,7 +87,6 @@ fun startGetEventMonitoring(viewModel: MainViewModel) {
                 redirectErrorStream(true)
             }.start()
             val outputStream = process.outputStream
-            val inputStream = process.inputStream.bufferedReader()
             val p = Runtime.getRuntime().exec("su -c getevent")
             val reader = BufferedReader(InputStreamReader(p.inputStream))
             while (true) {

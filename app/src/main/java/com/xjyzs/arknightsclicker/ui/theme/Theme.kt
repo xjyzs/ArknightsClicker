@@ -1,4 +1,4 @@
-package com.xjyzs.arknightsclicker.theme
+package com.xjyzs.arknightsclicker.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
