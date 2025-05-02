@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,7 +78,7 @@ fun MainUI(viewModel: MainViewModel) {
 }
 
 private fun startGetEventMonitoring(viewModel: MainViewModel) {
-    thread {
+     thread {
         try {
             val process = Runtime.getRuntime().exec("su -c getevent -lt")
             val reader = BufferedReader(InputStreamReader(process.inputStream))
