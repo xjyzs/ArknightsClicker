@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.xjyzs.arknightsclicker"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         androidResources. localeFilters+= listOf("zh")
@@ -30,29 +30,47 @@ android {
 
     flavorDimensions += "abi"
     productFlavors {
+        val signingConfig = if (signingConfigs.findByName("release") != null) {
+            signingConfigs.getByName("release")
+        } else {
+            signingConfigs.getByName("debug")
+        }
         create("x86") {
             dimension = "abi"
             ndk { abiFilters.add("x86") }
-            signingConfig = signingConfigs.getByName("release")
+            this.signingConfig = signingConfig
         }
         create("x86_64") {
             dimension = "abi"
             ndk { abiFilters.add("x86_64") }
-            signingConfig = signingConfigs.getByName("release")
+            this.signingConfig = signingConfig
         }
         create("arm") {
             dimension = "abi"
             ndk { abiFilters.add("armeabi-v7a") }
-            signingConfig = signingConfigs.getByName("release")
+            this.signingConfig = signingConfig
         }
-        create("arm64") {
+        create("arm64Minsdk35") {
             dimension = "abi"
             ndk { abiFilters.add("arm64-v8a") }
-            signingConfig = signingConfigs.getByName("release")
+            minSdk=35
+            this.signingConfig = signingConfig
+        }
+        create("arm64Minsdk29") {
+            dimension = "abi"
+            ndk { abiFilters.add("arm64-v8a") }
+            minSdk=29
+            this.signingConfig = signingConfig
+        }
+        create("arm64Minsdk26") {
+            dimension = "abi"
+            ndk { abiFilters.add("arm64-v8a") }
+            minSdk=26
+            this.signingConfig = signingConfig
         }
         create("universal") {
             dimension = "abi"
-            signingConfig = signingConfigs.getByName("release")
+            this.signingConfig = signingConfig
         }
     }
 
@@ -82,9 +100,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-    kotlinOptions {
-        jvmTarget = "21"
     }
     buildFeatures {
         compose = true
