@@ -31,7 +31,7 @@ class ArknightsLaunchService : Service() {
         notificationManager.createNotificationChannel(channel)
         val notification = NotificationCompat.Builder(this, "launch")
             .setContentTitle("明日方舟启动中")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_launcher)
             .build()
         startForeground(1001, notification)
     }
